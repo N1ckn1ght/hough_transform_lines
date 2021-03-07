@@ -26,13 +26,13 @@ void print(vector <vector <int>>& ar)
 }
 
 int main()
-{	
+{
 	json image;
 	ifstream input_image("image_hough.json", ifstream::binary);
 	input_image >> image;
 
-	const int XMAX = 100;
-	const int YMAX = 100;
+	const int XMAX = 1024;
+	const int YMAX = 1024;
 	vector <vector <int>> hou(XMAX, vector <int>(YMAX, 0));
 	vector <Point> pts;
 
@@ -46,10 +46,10 @@ int main()
 			}
 		}
 	}
-	
+
 	const int LIM = pts.size();
 	cout << "There are " << LIM << " points.\n";
-	
+
 	double a, b;
 	int itmp;
 	for (int i = 0; i < LIM; i++)
@@ -74,7 +74,7 @@ int main()
 	}
 
 	cout << "Hough has been calculated, now print..." << "\n";
-	print(hou);
+	// print(hou);
 	int max_bright = 0;
 	double k;
 
@@ -88,7 +88,7 @@ int main()
 			}
 		}
 	}
-	
+
 	k = (double)255 / max_bright;
 	cout << "Max bright is " << max_bright << ", color k = " << k << ", now converting...\n";
 
@@ -100,7 +100,7 @@ int main()
 		}
 	}
 
-	print(hou);
+	// print(hou);
 	const char* path = "result.bmp";
 	string s = path;
 	cout << "Finally, the .bmp file will be saved to .\\" << s << "\n";
@@ -126,7 +126,7 @@ int main()
 			{
 				tmp = 255;
 			}
-		
+
 			paint[(x + y * XMAX) * 3 + 2] = (unsigned char)tmp;
 			paint[(x + y * XMAX) * 3 + 1] = (unsigned char)tmp;
 			paint[(x + y * XMAX) * 3 + 0] = (unsigned char)tmp;
@@ -149,7 +149,9 @@ int main()
 	f = fopen(path, "wb");
 	fwrite(bmpfileheader, 1, 14, f);
 	fwrite(bmpinfoheader, 1, 40, f);
-	for (int i = 0; i < YMAX; i++)
+
+	// debug: очередное костыльное, изображение было перевёрнуто...
+	for (int i = YMAX - 1; i >= 0; i--)
 	{
 		fwrite(paint + (XMAX * (YMAX - i - 1) * 3), 3, XMAX, f);
 		fwrite(bmppad, 1, (4 - (XMAX * 3) % 4) % 4, f);
